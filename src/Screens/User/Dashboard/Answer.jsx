@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 
-export function Answer({ answerData, answers, event, answerValues }) {
+export function Answer({ answerData, answers, event, answerValues, index }) {
   const [selected, setIsSelected] = useState(false);
 
   useEffect(() => {
-    const isSelected = answerValues.some((value) => (
-      value.questinareId === event.questionnaireId && value.realAnswer === answers
-    ));
-  
+    const isSelected = answerValues.some(
+      (value) =>
+        value.questinareId === event.questionnaireId &&
+        value.realAnswer === index + 1
+    );
+
     setIsSelected(isSelected);
   }, [answerValues, event.questionnaireId, answers]);
-  
 
   return (
     <div
@@ -19,14 +20,8 @@ export function Answer({ answerData, answers, event, answerValues }) {
           ? "bg-gray-400 mx-6 h-16 w-auto mb-4 rounded-md flex items-center"
           : "bg-gray-100  mx-6 h-16 w-auto mb-4 rounded-md flex items-center"
       }
-      onClick={() => answerData(answers, event)}
+      onClick={() => answerData(event, index)}
     >
-      {/* <input
-              type="radio"
-              name="answer"
-              value={answer}
-              className={selected ? "ml-5 dark:bg-blue-600" : "ml-5 dark:bg-gray-800"}
-            /> */}
       <label
         className={
           selected

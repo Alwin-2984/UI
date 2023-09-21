@@ -40,7 +40,7 @@ export function NavBar(token, logout) {
           style={({ isActive }) => (isActive ? { color: "black" } : undefined)}
         >
           <PlaylistAddIcon />
-          Post Event
+          questinare
         </NavLink>
       </li>
       <li>

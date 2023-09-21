@@ -19,8 +19,6 @@ function Login({ signUp, isOrganiser }) {
 
   // Function to handle form submission
   const handleSubmit = (values) => {
-    alert("hi");
-
     if (apiCallInProgress) {
       return; // Don't proceed if an API call is already in progress
     }
@@ -30,14 +28,17 @@ function Login({ signUp, isOrganiser }) {
     const { confirmPassword, ...userData } = values;
     try {
       const apiPromise = new Promise((resolve, reject) => {
-        alert("hi");
         RegistrationAndLogin(userData, signUp, isOrganiser)
           .then((response) => {
-            setApiCallInProgress(false);
-
-            resolve(response);
             const { storageKey, navigatePath } =
               LocalSotageProfileStoring(isOrganiser);
+            setApiCallInProgress(false);
+
+            if (isOrganiser && response.data.status === 0) {
+              logout();
+            }
+
+            resolve(response);
 
             // Handle successful form submission
             // Store the response data in local storage
@@ -64,6 +65,15 @@ function Login({ signUp, isOrganiser }) {
     }
   };
 
+  const logout = () => {
+    if (isOrganiser) {
+      localStorage.removeItem("OrganizationProfile");
+    } else {
+      localStorage.removeItem("Profile");
+    }
+    isOrganiser ? navigate("/organizerLogin") : navigate("/dashboard"); // Navigate to the login page or Home page after logout
+    window.location.reload();
+  };
   return (
     <>
       <div className=" bg-gray-100 flex  justify-center sm:py-0 py-0 min-h-screen max-h-screen overflow-y-auto  overflow-x-hidden">
