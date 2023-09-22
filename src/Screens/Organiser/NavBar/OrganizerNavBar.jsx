@@ -20,17 +20,6 @@ export function OrganizerNavBar(token, logout) {
       </li>
      
       <li>
-        <NavLink
-          to="/Organiser/EventList"
-          style={({ isActive }) =>
-            isActive ? { color: "#8739FA" } : undefined
-          }
-        >
-          <BallotIcon />
-          Event list
-        </NavLink>
-      </li>
-      <li>
         {token ? (
           <NavLink onClick={logout}>
             <LogoutIcon />

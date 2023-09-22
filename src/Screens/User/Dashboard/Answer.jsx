@@ -17,8 +17,8 @@ export function Answer({ answerData, answers, event, answerValues, index }) {
     <div
       className={
         selected
-          ? "bg-gray-400 mx-6 h-16 w-auto mb-4 rounded-md flex items-center"
-          : "bg-gray-100  mx-6 h-16 w-auto mb-4 rounded-md flex items-center"
+          ? "bg-gray-700 mx-6 h-16 w-auto mb-4 rounded-md flex items-center"
+          : "bg-gray-200  mx-6 h-16 w-auto mb-4 rounded-md flex items-center"
       }
       onClick={() => answerData(event, index)}
     >
@@ -26,7 +26,7 @@ export function Answer({ answerData, answers, event, answerValues, index }) {
         className={
           selected
             ? "text-white dark:text-gray-400 text-lg ml-4"
-            : "text-gray-700 dark:text-gray-400 text-lg ml-4"
+            : "text-gray-900 dark:text-gray-400 text-lg ml-4"
         }
       >
         {answers}

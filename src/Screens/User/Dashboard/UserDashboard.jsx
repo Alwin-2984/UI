@@ -8,6 +8,8 @@ import {
 import QuizAnswers from "./QuizAnswers";
 import { ToasterWithLoading } from "../../Components/Toasters/ToasterWithLoading";
 import GlobalToaster from "../../Components/Toasters/GlobalToaster";
+import HardcodedValues from "./HardcodedValues";
+import Swal from "sweetalert2";
 
 const UserDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -96,18 +98,30 @@ const UserDashboard = () => {
   };
 
   const resetScoreFunction = () => {
-    const apiPromise = new Promise((resolve, reject) => {
-      resetScoreApi()
-        .then((response) => {
-          setScore(undefined);
-          questionsFetchApiCall();
-          resolve(response);
-        })
-        .catch((error) => {
-          reject(error);
-        });
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        resetScoreApi()
+          .then((response) => {
+            Swal.fire(
+              "Reset Successfully",
+              "Your proggress has been deleted.",
+              "success"
+            );
+            setScore(undefined);
+            questionsFetchApiCall();
+            resolve(response);
+          })
+          .catch(() => {});
+      }
     });
-    ToasterWithLoading(apiPromise, "loading", "Reset successfull");
   };
 
   return (
@@ -119,41 +133,42 @@ const UserDashboard = () => {
           ) : (
             <div>
               <div className="w-full flex justify-center mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl">
-                Your Questions
+                {HardcodedValues.YourQuestions}
               </div>
               <div className="w-full flex justify-center mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl">
                 {questionAnswerList[0]?.level}
               </div>
-              <div className="md:absolute md:top-0 md:left-0 max-md:w-full max-md:flex max-md:justify-center">
+              <div className="md:absolute md:top-3 md:left-3 max-md:w-full max-md:flex max-md:justify-center text-lg font-semibold break-words max-md:text-base text-gray-900">
                 {questionCount} Questions remaining
               </div>
               {score && (
-                <div className="md:absolute md:top-6 md:left-0 max-md:w-full max-md:flex max-md:justify-center">
-                  Current Score {score?.totalPoints}/{score?.totalQuestionCount}
+                <div className="md:absolute md:top-10 md:left-3 max-md:w-full max-md:flex max-md:justify-center text-[1.7rem] font-semibold break-words max-md:text-lg text-gray-900">
+                  {HardcodedValues.CurrentScore} {score?.totalPoints}/
+                  {score?.totalQuestionCount}
                 </div>
               )}
               {questionAnswerList.length == 0 && (
                 <div className="w-full flex justify-center mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl">
-                  Your all caught up!
+                  {HardcodedValues.YourAllCaughtUp}
                 </div>
               )}
-              {/* {questionAnswerList?.length == 0 && ( */}
               <div className="w-full flex justify-center mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl">
                 <button
                   onClick={resetScoreFunction}
                   className=" bg-gray-700 text-white text-sm rounded-lg py-2.5 px-2.5 hover:bg-[#8739FA] focus:ring w-32 mt-10 mb-10"
                 >
-                  Reset All
+                  {HardcodedValues.reset}
                 </button>
               </div>
-              {/* )} */}
               {questionAnswerList.map((event) => (
                 <div
                   key={event.questionnaireId}
                   className="flex justify-center"
                 >
-                  <div className="flex justify-center mt-16 flex-col">
-                    <div className="mb-3">Q:{event.question}</div>
+                  <div className="flex justify-center mt-10 flex-col">
+                    <div className="text-2xl font-semibold break-words max-md:text-lg text-gray-900 mb-3">
+                      Q:{event.question}
+                    </div>
                     <QuizAnswers
                       event={event}
                       answers={event}
@@ -170,10 +185,10 @@ const UserDashboard = () => {
                     className={
                       questionAnswerList.length - answerValues.length != 0
                         ? " bg-gray-700 text-white text-sm rounded-lg py-2.5 px-2.5 hover:bg-red-500 focus:ring w-32 mt-10 mb-10"
-                        : " bg-blue-900 text-white text-sm rounded-lg py-2.5 px-2.5 hover:bg-green-600 focus:ring w-32 mt-10 mb-10"
+                        : " bg-blue-900 text-white text-sm rounded-lg py-2.5 px-2.5 hover:bg-blue-700 focus:ring w-32 mt-10 mb-10"
                     }
                   >
-                    submit
+                    {HardcodedValues.submit}
                   </button>
                 )}
               </div>

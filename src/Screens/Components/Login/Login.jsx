@@ -8,6 +8,7 @@ import { ToasterWithLoading } from "../Toasters/ToasterWithLoading";
 import DynamicForm from "./DynamicForm";
 import { initialValuesFunction } from "./initialValuesFunction";
 import { yupValidation } from "./yupValidation";
+import GlobalToaster from "../Toasters/GlobalToaster";
 // Define the Login component, which accepts 'signUp' and 'isOrganiser' as props
 function Login({ signUp, isOrganiser }) {
   const navigate = useNavigate();
@@ -30,13 +31,22 @@ function Login({ signUp, isOrganiser }) {
       const apiPromise = new Promise((resolve, reject) => {
         RegistrationAndLogin(userData, signUp, isOrganiser)
           .then((response) => {
+            if (isOrganiser && response.data.status === 0) {
+              setApiCallInProgress(false);
+              GlobalToaster("invalid User", 405, ["error"], 3000);
+              localStorage.removeItem("OrganizationProfile");
+              navigate("/organizerLogin");
+              return;
+            } else if (!isOrganiser && response.data.status === 1) {
+              setApiCallInProgress(false);
+              GlobalToaster("invalid User", 405, ["error"], 3000);
+              localStorage.removeItem("Profile");
+              navigate("/userLogin");
+              return;
+            }
             const { storageKey, navigatePath } =
               LocalSotageProfileStoring(isOrganiser);
             setApiCallInProgress(false);
-
-            if (isOrganiser && response.data.status === 0) {
-              logout();
-            }
 
             resolve(response);
 
@@ -65,15 +75,6 @@ function Login({ signUp, isOrganiser }) {
     }
   };
 
-  const logout = () => {
-    if (isOrganiser) {
-      localStorage.removeItem("OrganizationProfile");
-    } else {
-      localStorage.removeItem("Profile");
-    }
-    isOrganiser ? navigate("/organizerLogin") : navigate("/dashboard"); // Navigate to the login page or Home page after logout
-    window.location.reload();
-  };
   return (
     <>
       <div className=" bg-gray-100 flex  justify-center sm:py-0 py-0 min-h-screen max-h-screen overflow-y-auto  overflow-x-hidden">
