@@ -11,11 +11,11 @@ export function Answer({
   const [selected, setIsSelected] = useState(false);
 
   useEffect(() => {
-    const isSelected = answerValues?.some(
-      (value) => value.id === event.id && value.realAnswer === index + 1
+    setIsSelected(
+      answerValues?.some(
+        (value) => value.id === event.id && value.realAnswer === index + 1
+      )
     );
-
-    setIsSelected(isSelected);
   }, [answerValues, event.id, answers]);
 
   return (
@@ -36,7 +36,12 @@ export function Answer({
       >
         {answers}
       </label>
-      <button onClick={() => deleteOption(index)} className="mr-5  h-full">
+      <button
+        onClick={() => deleteOption(index)}
+        className={
+          selected ? "mr-5 h-full text-white" : "mr-5 h-full text-gray-950"
+        }
+      >
         <ClearIcon />
       </button>
     </div>

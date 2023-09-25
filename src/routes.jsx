@@ -20,6 +20,7 @@ import "./routes.css";
 import LoginPage from "./Screens/User/LoginAndRegistration/LoginPage";
 import LoginAuthUser from "./Auth/LoginAuthUser";
 import AuthGuardUser from "./Auth/AuthGuardUser";
+import QuestionList from "./Screens/Organiser/QuestionList/QuestionList";
 
 export default function Routes() {
   return (
@@ -45,6 +46,11 @@ export default function Routes() {
             {
               path: "app",
               element: <OrganiserDashboard />,
+              index: true,
+            },
+            {
+              path: "questionList",
+              element: <QuestionList />,
               index: true,
             },
           ],

@@ -1,13 +1,11 @@
-import { NavLink } from "react-router-dom";
-import BallotIcon from '@mui/icons-material/Ballot';import HomeIcon from "@mui/icons-material/Home";
+import HomeIcon from "@mui/icons-material/Home";
+import ListAltIcon from "@mui/icons-material/ListAlt";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-import { BsCalendar2Plus } from "react-icons/bs";
-
-
+import { NavLink } from "react-router-dom";
 export function OrganizerNavBar(token, logout) {
   return (
-    <ul className="menu" style={{ backgroundColor: "rgb(21,20,24)" }}>
+    <ul className="menu" style={{ backgroundColor: "#757575" }}>
       <li>
         <NavLink
           to="/Organiser/app"
@@ -18,7 +16,17 @@ export function OrganizerNavBar(token, logout) {
           <HomeIcon /> Home
         </NavLink>
       </li>
-     
+
+      <li>
+        <NavLink
+          to="/Organiser/questionList"
+          style={({ isActive }) =>
+            isActive ? { color: "#8739FA" } : undefined
+          }
+        >
+          <ListAltIcon /> QuestionList
+        </NavLink>
+      </li>
       <li>
         {token ? (
           <NavLink onClick={logout}>

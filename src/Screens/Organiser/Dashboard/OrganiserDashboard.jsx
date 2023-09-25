@@ -1,18 +1,45 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import HardcodedValues from "./HardcodedValues";
 import QuizAnswers from "./QuizAnswers";
 import AddIcon from "@mui/icons-material/Add";
 import GlobalToaster from "../../Components/Toasters/GlobalToaster";
-import { questionSubmitApi } from "../../../API/ApiService/EventListApi/EventListApi";
+import {
+  questionListApiForAdminById,
+  questionSubmitApi,
+} from "../../../API/ApiService/EventListApi/EventListApi";
+import { useSearchParams } from "react-router-dom";
 const OrganiserDashboard = () => {
+  const [apiCallInProgress, setApiCallInProgress] = useState(false);
   const [answerValues, setEventValues] = useState([]);
   const [option, setOption] = useState("");
   const [options, setOptions] = useState([]); // Use an array to store options
   const [question, setQuestion] = useState("");
-  const [level, setLevel] = useState(0);
+  const [level, setLevel] = useState(null);
+  const [questionAnswer, setQuestionAnswer] = useState();
+
+  const [searchParams] = useSearchParams();
+  const questionId = searchParams.get("questionId");
 
   const questionData = {
     id: 1,
+  };
+
+  useEffect(() => {
+    if (questionId != null) {
+      questionsFetchApiCallById(questionId);
+    }
+  }, []);
+
+  const questionsFetchApiCallById = (questionId) => {
+    questionListApiForAdminById(questionId)
+      .then((response) => {
+        setQuestionAnswer(response?.data);
+        setQuestion(response?.data.question);
+        setLevel(response?.data.level);
+        setOptions(response?.data.answers);
+        answerData(questionData, response?.data.realAnswer - 1);
+      })
+      .catch((error) => {});
   };
 
   const answerData = (event, index) => {
@@ -54,39 +81,62 @@ const OrganiserDashboard = () => {
   };
 
   const submitQuestion = () => {
+    if (apiCallInProgress) {
+      return; // Don't proceed if an API call is already in progress
+    }
+
+    setApiCallInProgress(true);
+
     if (question === "") {
       GlobalToaster("Enter Question", 405, ["error"], 3000);
+      setApiCallInProgress(false);
+
       return;
     }
-    if (!level) {
+    console.log(
+      "🚀 ~ file: OrganiserDashboard.jsx:98 ~ submitQuestion ~ level:",
+      level
+    );
+    if (level == null) {
       GlobalToaster("select a level", 405, ["error"], 3000);
+      setApiCallInProgress(false);
+
       return;
     }
     if (options.length === 0) {
       GlobalToaster("options required", 405, ["error"], 3000);
+      setApiCallInProgress(false);
+
       return;
     }
 
     if (!answerValues[0]?.realAnswer) {
       GlobalToaster("select an option as real answer", 405, ["error"], 3000);
+      setApiCallInProgress(false);
+
       return;
     }
 
-    questionSubmitApi({
-      question: question,
-      level: level,
-      realAnswer: answerValues[0]?.realAnswer,
-      answers: options,
-    })
+    questionSubmitApi(
+      questionId,
+      {
+        question: question,
+        level: level,
+        realAnswer: answerValues[0]?.realAnswer,
+        answers: options,
+      },
+      questionId != null
+    )
       .then(() => {
+        setApiCallInProgress(false);
         setEventValues([]);
         setOption("");
         setOptions([]);
         setQuestion("");
-        setLevel(0);
-        GlobalToaster("Question added", 405, ["error"], 3000);
+        GlobalToaster("Question added", 405, ["success"], 3000);
       })
       .catch((err) => {
+        setApiCallInProgress(false);
         GlobalToaster("Error occured", 405, ["error"], 3000);
       });
   };
@@ -104,6 +154,7 @@ const OrganiserDashboard = () => {
                 className="w-full shadow-inner p-4 border-0"
                 type="text"
                 name="name"
+                value={question}
                 placeholder="Enter the Question"
                 onChange={(e) => setQuestion(e.target.value)}
                 required
@@ -121,7 +172,13 @@ const OrganiserDashboard = () => {
                   setLevel(e.target.value);
                 }}
               >
-                <option value={false}>select</option>
+                <option
+                  value={questionId != null ? questionAnswer?.level : null}
+                >
+                  {questionId != null
+                    ? `level ${questionAnswer?.level + 1}`
+                    : "select"}
+                </option>
                 <option value={0}>Level 1</option>
                 <option value={1}>Level 2</option>
                 <option value={2}>Level 3</option>
@@ -139,9 +196,15 @@ const OrganiserDashboard = () => {
                   placeholder="Enter the option"
                   value={option}
                   onChange={(e) => setOption(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault(); // Prevent the default form submission behavior
+                      handleOptions();
+                    }
+                  }}
                   required
                 />
-                <button onClick={handleOptions}>
+                <button className="w-[6%]" onClick={handleOptions}>
                   <AddIcon />
                 </button>
               </div>
@@ -149,7 +212,6 @@ const OrganiserDashboard = () => {
           </div>
           {options.length != 0 && (
             <>
-              <div>click select real answer</div>
               <QuizAnswers
                 event={questionData}
                 answerData={answerData}

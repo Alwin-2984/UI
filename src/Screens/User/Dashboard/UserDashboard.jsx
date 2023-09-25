@@ -138,11 +138,11 @@ const UserDashboard = () => {
               <div className="w-full flex justify-center mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl">
                 {questionAnswerList[0]?.level}
               </div>
-              <div className="md:absolute md:top-3 md:left-3 max-md:w-full max-md:flex max-md:justify-center text-lg font-semibold break-words max-md:text-base text-gray-900">
+              <div className="2xl:absolute 2xl:top-3 2xl:left-3 max-2xl::w-full max-2xl:flex max-2xl:justify-center text-lg font-semibold break-words max-2xl:text-lg text-gray-900">
                 {questionCount} Questions remaining
               </div>
               {score && (
-                <div className="md:absolute md:top-10 md:left-3 max-md:w-full max-md:flex max-md:justify-center text-[1.7rem] font-semibold break-words max-md:text-lg text-gray-900">
+                <div className="2xl:absolute 2xl:top-10 2xl:left-3 max-2xl::w-full max-2xl:flex max-2xl:justify-center text-[1.7rem] font-semibold break-words max-2xl:text-lg text-gray-900">
                   {HardcodedValues.CurrentScore} {score?.totalPoints}/
                   {score?.totalQuestionCount}
                 </div>
@@ -165,8 +165,8 @@ const UserDashboard = () => {
                   key={event.questionnaireId}
                   className="flex justify-center"
                 >
-                  <div className="flex justify-center mt-10 flex-col">
-                    <div className="text-2xl font-semibold break-words max-md:text-lg text-gray-900 mb-3">
+                  <div className="flex justify-center mt-10 flex-col ">
+                    <div className="text-2xl font-semibold break-words max-md:text-lg text-gray-900 mb-3  w-[50vw] max-md:w-[70vw] max-sm:w-[85vw]">
                       Q:{event.question}
                     </div>
                     <QuizAnswers
