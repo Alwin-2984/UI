@@ -4,14 +4,13 @@ import {
   currentScoreApi,
   questionListApi,
   resetScoreApi,
-} from "../../../API/ApiService/EventListApi/EventListApi";
-import QuizAnswers from "./QuizAnswers";
-import { ToasterWithLoading } from "../../Components/Toasters/ToasterWithLoading";
-import GlobalToaster from "../../Components/Toasters/GlobalToaster";
-import HardcodedValues from "./HardcodedValues";
+} from "../../../../API/ApiService/EventListApi/EventListApi";
+import QuizAnswers from "../QuizAnswers/QuizAnswers";
+import GlobalToaster from "../../../Components/Toasters/GlobalToaster";
+import HardcodedValues from "../../Dashboard/HardcodedValues";
 import Swal from "sweetalert2";
 
-const UserDashboard = () => {
+const QuizList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [questionAnswerList, setQuestionAnswerList] = useState([]);
   const [answerValues, setEventValues] = useState([]);
@@ -34,6 +33,7 @@ const UserDashboard = () => {
         setQuestionCount(response?.data.length);
       })
       .catch((error) => {
+        console.error(error);
         setIsLoading(false);
       });
 
@@ -41,7 +41,9 @@ const UserDashboard = () => {
       .then((response) => {
         setScore(response?.data);
       })
-      .catch((error) => {});
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   const answerData = (event, index) => {
@@ -66,67 +68,68 @@ const UserDashboard = () => {
     topOfPageElement.scrollTo({ top: 0, left: 0, behavior: "smooth" });
   };
 
-  const submitAnswer = () => {
-    if (questionCount == 0) {
-      const apiPromise = new Promise((resolve, reject) => {
-        answersSubmitApi(answerValues)
-          .then((response) => {
-            resolve(response);
-            setScore(undefined);
-            setEventValues([]);
-            questionsFetchApiCall();
-            goToTop();
-            if (response?.data.message === "success") {
-              ToasterWithLoading(apiPromise, "loading", "submitted");
-              return;
-            }
-            if (response?.data.message === "passed") {
-              ToasterWithLoading(
-                apiPromise,
-                "loading",
-                "You've reached the highest level. Continue with high-level questions"
-              );
-            }
-          })
-          .catch((err) => {
-            reject(err);
-          });
-      });
+  const submitAnswer = async () => {
+    if (questionCount === 0) {
+      try {
+        const response = await answersSubmitApi(answerValues);
+        setScore(undefined);
+        setEventValues([]);
+        questionsFetchApiCall();
+        goToTop();
+
+        if (response?.data.message === "success") {
+          GlobalToaster("submitted", 405, ["success"], 3000);
+        } else if (response?.data.message === "passed") {
+          GlobalToaster(
+            "You've reached the highest level. Continue with high-level questions",
+            406,
+            ["success"],
+            3000
+          );
+        }
+      } catch (err) {
+        console.error(err);
+      }
     } else {
       GlobalToaster("answer all questions", 405, ["error"], 3000);
+      goToTop();
     }
   };
 
-  const resetScoreFunction = () => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes",
-    }).then((result) => {
+  const resetScoreFunction = async () => {
+    try {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes",
+      });
+
       if (result.isConfirmed) {
-        resetScoreApi()
-          .then((response) => {
-            Swal.fire(
-              "Reset Successfully",
-              "Your proggress has been deleted.",
-              "success"
-            );
-            setScore(undefined);
-            questionsFetchApiCall();
-            resolve(response);
-          })
-          .catch(() => {});
+        await resetScoreApi();
+        Swal.fire(
+          "Reset Successfully",
+          "Your progress has been deleted.",
+          "success"
+        );
+        setScore(undefined);
+        questionsFetchApiCall();
       }
-    });
+    } catch (error) {
+      console.error(error);
+      GlobalToaster("Error! Try again", 405, ["error"], 3000);
+    }
   };
 
   return (
     <div className="relative">
-      <div id="topOfPage" className="w-screen h-[90vh] overflow-y-scroll">
+      <div
+        id="topOfPage"
+        className="w-screen h-[90vh] overflow-y-scroll bg-[whitesmoke]"
+      >
         <div>
           {isLoading ? (
             <p>Loading...</p>
@@ -200,4 +203,4 @@ const UserDashboard = () => {
   );
 };
 
-export default UserDashboard;
+export default QuizList;

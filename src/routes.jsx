@@ -13,14 +13,16 @@ const OrganizerLayout = lazy(() =>
   import("./Screens/Organiser/Dashboard/OrganizerLayout")
 );
 const OrganiserDashboard = lazy(() =>
-  import("./Screens/Organiser/Dashboard/OrganiserDashboard")
+  import("./Screens/Organiser/Question/QuestionAdd/QuestionAdd")
 );
-import UserDashboard from "./Screens/User/Dashboard/UserDashboard";
 import "./routes.css";
 import LoginPage from "./Screens/User/LoginAndRegistration/LoginPage";
 import LoginAuthUser from "./Auth/LoginAuthUser";
 import AuthGuardUser from "./Auth/AuthGuardUser";
-import QuestionList from "./Screens/Organiser/QuestionList/QuestionList";
+import QuestionList from "./Screens/Organiser/Question/QuestionList/QuestionList";
+import QuizList from "./Screens/User/Quiz/QuizList/QuizList";
+import QuestionAdd from "./Screens/Organiser/Question/QuestionAdd/QuestionAdd";
+import QuizEdit from "./Screens/Organiser/Question/QuizEdit/QuizEdit";
 
 export default function Routes() {
   return (
@@ -45,7 +47,12 @@ export default function Routes() {
             { element: <Navigate to="app" />, index: true },
             {
               path: "app",
-              element: <OrganiserDashboard />,
+              element: <QuestionAdd />,
+              index: true,
+            },
+            {
+              path: "EditQuestion",
+              element: <QuizEdit />,
               index: true,
             },
             {
@@ -73,7 +80,7 @@ export default function Routes() {
           ),
           children: [
             { element: <Navigate to="home" />, index: true },
-            { path: "home", element: <UserDashboard />, index: true },
+            { path: "home", element: <QuizList />, index: true },
           ],
         },
 

@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import HardcodedValues from "./HardcodedValues";
-import QuizAnswers from "./QuizAnswers";
+import HardcodedValues from "../../Dashboard/HardcodedValues";
+import QuizAnswers from "./Options/QuizAnswers";
 import AddIcon from "@mui/icons-material/Add";
-import GlobalToaster from "../../Components/Toasters/GlobalToaster";
+import GlobalToaster from "../../../Components/Toasters/GlobalToaster";
 import {
   questionListApiForAdminById,
   questionSubmitApi,
-} from "../../../API/ApiService/EventListApi/EventListApi";
-import { useSearchParams } from "react-router-dom";
-const OrganiserDashboard = () => {
+} from "../../../../API/ApiService/EventListApi/EventListApi";
+import { useNavigate, useSearchParams } from "react-router-dom";
+const QuestionAdd = () => {
   const [apiCallInProgress, setApiCallInProgress] = useState(false);
   const [answerValues, setEventValues] = useState([]);
   const [option, setOption] = useState("");
@@ -16,7 +16,7 @@ const OrganiserDashboard = () => {
   const [question, setQuestion] = useState("");
   const [level, setLevel] = useState(null);
   const [questionAnswer, setQuestionAnswer] = useState();
-
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const questionId = searchParams.get("questionId");
 
@@ -93,10 +93,7 @@ const OrganiserDashboard = () => {
 
       return;
     }
-    console.log(
-      "🚀 ~ file: OrganiserDashboard.jsx:98 ~ submitQuestion ~ level:",
-      level
-    );
+
     if (level == null) {
       GlobalToaster("select a level", 405, ["error"], 3000);
       setApiCallInProgress(false);
@@ -134,6 +131,7 @@ const OrganiserDashboard = () => {
         setOptions([]);
         setQuestion("");
         GlobalToaster("Question added", 405, ["success"], 3000);
+        navigate("/Organiser/questionList");
       })
       .catch((err) => {
         setApiCallInProgress(false);
@@ -198,7 +196,7 @@ const OrganiserDashboard = () => {
                   onChange={(e) => setOption(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      e.preventDefault(); // Prevent the default form submission behavior
+                      e.preventDefault();
                       handleOptions();
                     }
                   }}
@@ -233,4 +231,4 @@ const OrganiserDashboard = () => {
   );
 };
 
-export default OrganiserDashboard;
+export default QuestionAdd;

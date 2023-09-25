@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import {
   deleteQuestion,
   questionListApiForAdmin,
-} from "../../../API/ApiService/EventListApi/EventListApi";
+} from "../../../../API/ApiService/EventListApi/EventListApi";
 import Swal from "sweetalert2";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
@@ -23,8 +23,8 @@ const QuestionList = () => {
       .catch((error) => {});
   };
 
-  const deleteQuestionfunction = (questionId) => {
-    Swal.fire({
+  const deleteQuestionfunction = async (questionId) => {
+    const result = await Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
       icon: "warning",
@@ -32,16 +32,17 @@ const QuestionList = () => {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        deleteQuestion(questionId)
-          .then(() => {
-            deleteOption(questionId);
-            Swal.fire("Deleted Successfully");
-          })
-          .catch((error) => {});
-      }
     });
+
+    if (result.isConfirmed) {
+      try {
+        await deleteQuestion(questionId);
+        deleteOption(questionId);
+        Swal.fire("Deleted Successfully");
+      } catch (error) {
+        GlobalToaster("delete unsuccessfull", 405, ["error"], 3000);
+      }
+    }
   };
 
   const deleteOption = (questionnaireIdToRemove) => {
@@ -87,7 +88,7 @@ const QuestionList = () => {
               <td className="px-6 py-4">level {question.level + 1}</td>
               <td className="px-6 py-4">
                 <NavLink
-                  to={`/Organiser/app?questionId=${question?.questionnaireId}`}
+                  to={`/Organiser/EditQuestion?questionId=${question?.questionnaireId}`}
                   className="font-medium text-gray-700 hover:text-gray-400 "
                 >
                   <DriveFileRenameOutlineIcon />
